@@ -5,6 +5,8 @@
 import numpy as np
 import scipy.optimize
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.express as px
 
 
 def convert_polar_to_polar(_radius, _angle, _centers_distance):
@@ -16,7 +18,7 @@ def convert_polar_to_polar(_radius, _angle, _centers_distance):
 
 
 def func_under_solve(_angle1):
-    _angle2 = np.linspace(-0.051, 0.251, 137)
+    _angle2 = np.linspace(-0.151, 0.151, 137)
     _angle2 = (_angle2 + 1) * np.pi
     _p = 263.6
     _dr = 156.2
@@ -28,6 +30,7 @@ def func_under_solve(_angle1):
 
 
 def plot_polar(_radius, _angle):
+
     r = _radius
     theta = _angle
     plt.polar(theta, r)
@@ -35,9 +38,23 @@ def plot_polar(_radius, _angle):
     plt.show()
 
 
+def plotly_polar(_theta, _radial):
+    _theta = _theta / 2 / np.pi * 360
+    fig = px.scatter_polar(
+            r=_radial,
+            theta=_theta,
+            start_angle=0,
+            direction="counterclockwise",
+            range_theta=[150, 210]
+        )
+    fig.write_html('pic_sign', auto_open=True)
+    fig.show()
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     centers_distance = 156.2
+    p = 263.6
     pi = np.pi
     angle0 = pi / 8
     angle = np.linspace(pi * (1 - 0.25), pi * (1 + 0.25), 100)
@@ -48,7 +65,15 @@ if __name__ == '__main__':
     # plot_polar(r2, angle2 - pi / 8)
 
     z = scipy.optimize.root(func_under_solve, x0=[pi] * 137)
-    print(z.x)
-    plt.plot( (np.linspace(-0.051, 0.251, 137) + 0), np.array(z.x) / pi - 1)
-    plt.show()
+    parabola_arg = z.x
+    parabola_ord = p / (1 - np.cos(parabola_arg))
+    radius_out = np.sqrt(parabola_ord ** 2 + centers_distance ** 2 -
+                         2 * parabola_ord * centers_distance * np.cos(parabola_arg))
+
+    # print(z.x)
+    plotly_polar(np.linspace(-0.151, 0.151, 137) * pi + pi, radius_out)
+
+    # plt.polar( (np.linspace(-0.151, 0.151, 137) * pi + pi), radius_out)
+    # plt.set_ylim(200, 300)
+    # plt.show()
     pass
