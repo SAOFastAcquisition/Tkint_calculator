@@ -10,6 +10,7 @@ p = 263.6
 centers_distance = 156.2  # расстояние между геометрическим центром телескопа и фокусом антенны
 angle_per_panel = 24 / 60 * np.pi / 180
 panel_speed = 1.44e-3
+n_center = 100
 n_left = 100
 n_right = 233
 pi = np.pi
@@ -32,8 +33,8 @@ def convert_polar_to_polar(_radius, _angle):
 
 def panel_angles():
     _n_sector = n_right - n_left + 1
-    _sector_left_pos = (150 - n_left + 1 / 2) * angle_per_panel
-    _sector_right_pos = (n_right - 150 + 1 / 2) * angle_per_panel
+    _sector_left_pos = (150 - n_left + 1 / 2) * angle_per_panel + pi
+    _sector_right_pos = (n_right - 150 + 1 / 2) * angle_per_panel + pi
     _panel_angle_pos = np.linspace((_sector_left_pos - angle_per_panel / 2),
                                    -(_sector_right_pos - angle_per_panel / 2),
                                    _n_sector) + np.pi
@@ -68,17 +69,20 @@ def plotly_polar(_theta, _radial, _plotly_dict):
 
 
 def calc_antenna(a, _angle0_d):
-    try:
-        leng = len(a)
-    except:
-        leng = 1
+    """Возвращает радиальное положение щита относительно геометрического центра телескопа и направление на щит
+    из фокуса АС при заданном направлении на щит из геометрического центра телескопа (ГЦТ)
 
+    :param a: направление на щит/щиты из ГЦТ
+    :param _angle0_d: смещение ДН АС по азимуту
+    :return:
+    """
     def func_under_solve(_angle1):
         """
-        Целевая функция для нахождения углового положения центра щита относительно фокуса параболы _angle1 при его заданной
-        угловой координате относильно геометрического центра радиотелескопа _angle2
-        :param _angle1: угол относительно фокуса параболы
-        :return: угол относильно геометрического центра радиотелескопа
+        Целевая функция для нахождения углового положения центра щита относительно фокуса параболы _angle1 при его
+        заданной угловой координате относильно геометрического центра радиотелескопа a
+        :param _angle1: угол относительно фокуса параболы как переменная
+        :return: угол относильно геометрического центра параболы радиотелескопа за вычетом заданного угла a
+        относительно геометрического центра - целевая функция для нахождения angle1, соответствующего а
         """
         dr = centers_distance
         _r1 = p / (1 - np.cos(_angle1))
@@ -87,14 +91,45 @@ def calc_antenna(a, _angle0_d):
         _f = np.pi - np.arcsin(np.sin(_angle1) * _coeff) - a
         return _f
 
-    f = func_under_solve
-    z = scipy.optimize.root(f, x0=[pi] * leng)
+    try:
+        _leng = len(a)
+    except:
+        _leng = 1
+
+    z = scipy.optimize.root(func_under_solve, x0=[pi] * _leng)
     parabola_arg = z.x
     parabola_value = p / (1 - np.cos(parabola_arg))
 
-    radius_out = np.sqrt(parabola_value ** 2 + centers_distance ** 2 -
-                         2 * parabola_value * centers_distance * np.cos(parabola_arg))
-    plotly_dict = {'range_theta': [140 - _angle0_d, 220 - _angle0_d],
+    _radius_out = np.sqrt(parabola_value ** 2 + centers_distance ** 2 -
+                          2 * parabola_value * centers_distance * np.cos(parabola_arg))
+
+    return _radius_out, parabola_arg
+
+
+def ref_panel_speed(_n_ref, _n_center):
+    """
+    Возвращает скорость движения опорного щита по направлению к фокусу АС
+    :param _n_ref: номер опорного щита
+    :param _n_center: номер центрального щита параболы АС
+    :return: скорость движения опорного щита по направлению к фокусу АС в м/сек
+    """
+    _theta_n_ref = pi + (_n_center - _n_ref) * angle_per_panel
+    _theta_n_center = pi + (150 - _n_center) * angle_per_panel
+    _r, _phy_n_ref = calc_antenna(_theta_n_ref, _theta_n_center)
+
+    _delta_angle = _phy_n_ref - _theta_n_ref
+    _panel_speed_parabola = panel_speed * np.cos(_delta_angle)
+    return _panel_speed_parabola
+
+
+if __name__ == '__main__':
+    angle0_d = -20  # Азимут в градусах
+    n_center_az = int(150 + angle0_d / 24 * 60)
+    ref_speed = ref_panel_speed(118, 150)
+    ang = panel_angles()
+    radius_out, arg = calc_antenna(ang, angle0_d)
+    angle0 = angle0_d / 180 * pi
+    plotly_dict = {'range_theta': [140 - angle0_d, 220 - angle0_d],
                    'polar': {
                        "angularaxis": {
                            "tickmode": "array",
@@ -103,25 +138,5 @@ def calc_antenna(a, _angle0_d):
                        }
                    }
                    }
-
-    return radius_out, parabola_arg, plotly_dict
-
-
-def ref_panel_speed(_n_ref, _n_center):
-    _theta_n_ref = pi + (_n_center - _n_ref) * angle_per_panel
-    _theta_n_center = pi + (150 - _n_center) * angle_per_panel
-    _r, _phy_n_ref, dict = calc_antenna(_theta_n_ref, _theta_n_center)
-
-    _delta_angle = _phy_n_ref - _theta_n_ref
-    _panel_speed_parabola = panel_speed * np.cos(_delta_angle)
-    return _panel_speed_parabola
-
-
-if __name__ == '__main__':
-    angle0d = -0  # Азимут в градусах
-    ref_speed = ref_panel_speed(118, 150)
-    ang = panel_angles()
-    radius_out, arg, plotly_dict = calc_antenna(ang, angle0d)
-    angle0 = angle0d / 180 * pi
     fig = plotly_polar(panel_angles() - angle0, radius_out, plotly_dict)
     pass
