@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6dffc32c-5cdb-498c-9181-c97a754f119d" name="Changes" comment="Сделано нахождение координат щита и отображение в круговых координатах для произвольного количества щитов и произвольного азимута на Юг+Плоский">
-      <change afterPath="$PROJECT_DIR$/read_mat.py" afterDir="false" />
+    <list default="true" id="6dffc32c-5cdb-498c-9181-c97a754f119d" name="Changes" comment="Начата рвбота с ДПФ для голограмм и сделана загрузка структуры данных с голограммами из Матлаб с преобразованием в dataframe">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/holo_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/holo_app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/read_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/read_mat.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,9 +85,9 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/read_mat.py" />
@@ -130,7 +129,14 @@
       <option name="project" value="LOCAL" />
       <updated>1720101075236</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Начата рвбота с ДПФ для голограмм и сделана загрузка структуры данных с голограммами из Матлаб с преобразованием в dataframe">
+      <created>1720442669952</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1720442669952</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -146,7 +152,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Сделано нахождение координат щита и отображение в круговых координатах для произвольного количества щитов и произвольного азимута на Юг+Плоский" />
-    <option name="LAST_COMMIT_MESSAGE" value="Сделано нахождение координат щита и отображение в круговых координатах для произвольного количества щитов и произвольного азимута на Юг+Плоский" />
+    <MESSAGE value="Начата рвбота с ДПФ для голограмм и сделана загрузка структуры данных с голограммами из Матлаб с преобразованием в dataframe" />
+    <option name="LAST_COMMIT_MESSAGE" value="Начата рвбота с ДПФ для голограмм и сделана загрузка структуры данных с голограммами из Матлаб с преобразованием в dataframe" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -158,13 +165,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/read_mat.py</url>
-          <line>23</line>
+          <line>131</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/read_mat.py</url>
-          <line>14</line>
-          <option name="timeStamp" value="11" />
+          <line>73</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/read_mat.py</url>
+          <line>65</line>
+          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

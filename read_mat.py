@@ -5,8 +5,21 @@ from scipy import fftpack
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objs as go
+from main import calc_antenna, ref_panel_speed
 
-path = r'D:\YandexDisk\Amp_ML\Hologramm\WorkHolDiff\HolDatN.mat'
+path = r'/home/anatoly/Yandex.Disk/Amp_ML/Hologramm/WorkHolDiff/HolDatN.mat'
+pi = np.pi
+angle_per_panel = 24 / 60 * np.pi / 180
+
+
+def get_panel_angles():
+    _n_sector = n_right - n_left + 1
+    _sector_left_pos = (150 - n_left + 1 / 2) * angle_per_panel + pi
+    _sector_right_pos = (- n_right + 150 + 1 / 2) * angle_per_panel + pi
+    _panel_angle_pos = np.linspace((_sector_left_pos - angle_per_panel / 2),
+                                   (_sector_right_pos - angle_per_panel / 2),
+                                   _n_sector)
+    return _panel_angle_pos
 
 
 def get_matlab_data(_path, _loc):
@@ -22,23 +35,33 @@ def get_matlab_data(_path, _loc):
 
 
 def get_holo_param(_data):
+    """
+
+    :param _data:
+    :return: _x - значение угла направления на точку отсчета ДПФ относительно фокуса параболы
+    """
     _holo = registration['Holo1']
     _len_holo = len(_holo)
-    _v_car = registration['V_car']   # скорость каретки
-    _v_sh = registration['V_sh']     # скорость щита
+    _v_car = registration['V_car']  # скорость каретки
+    _v_sh = registration['V_sh']  # скорость щита в направлении на ГЦА
     _lambda = registration['Lambda']  # длина волны
-    # _lambda = 3.3e-2
-    _holo_width = _len_holo * _v_car / 64    # длина голограммы
-    _n_ref = registration['Nref']    # опорный щит
-    _phy_ref = (150 - _n_ref) * 24 / 60 * np.pi / 180   # Угол на опорный щит относительно оси антенны
-    _x = np.array([i for i in range(_len_holo)])    # номера отсчетов
-    _с0 = (1 + np.cos(_phy_ref)) * _v_sh / _v_car   # сдвиг восстановленного поля из-за движения опорного щита
-    _x = _x * _lambda / _holo_width / 2 + _с0 / 2 - np.sin(_phy_ref)
+    # _lambda = 3.95e-2
+
+    _holo_width = _len_holo * _v_car / 64  # длина голограммы
+    _n_ref = registration['Nref']  # опорный щит
+    _v_sh_p = - ref_panel_speed(_n_ref, 150)
+    _phy_ref = (150 - _n_ref) * 24 / 60 * np.pi / 180  # Угол на опорный щит из ГЦА
+    _r, _psy_ref = calc_antenna(_phy_ref + pi, 0)
+    _psy_ref -= pi
+    _x = np.array([i for i in range(_len_holo)])  # номера отсчетов
+    _с0 = (1 + np.cos(_phy_ref)) * _v_sh_p / _v_car  # сдвиг восстановленного поля из-за движения опорного щита
+    _x = _x * _lambda / _holo_width + _с0 - np.sin(_psy_ref)
 
     return _x, _holo
 
+
 def plotly_form(*args):
-    _x, _y = args
+    _x, _y, _dict = args
 
     _fig = go.Figure()
     # _m = len(_data)
@@ -46,16 +69,21 @@ def plotly_form(*args):
     # for i in range(_m):
     #     if len(_data[i][2]) > 2:
     _fig.add_trace(go.Scatter(x=_x, y=_y))
-            # _l += 1
+    # _l += 1
 
-    _fig.update_layout(title='Amplitude', title_x=0.5,
-                       xaxis_title='angle',
-                       yaxis_title='Amplitude, arb. units',
+    _fig.update_layout(title=_dict['title'], title_x=0.5,
+                       xaxis_title=_dict['x_title'],
+                       yaxis_title=_dict['y_title'],
+                       xaxis={
+                           "tickmode": "array",
+                           "tickvals": _dict['tickvals'],
+                           "ticktext": _dict['ticktext']
+                       },
                        # hovermode="x",
                        paper_bgcolor='rgba(165,225,225,0.5)',
                        plot_bgcolor='rgba(90,150,60,0.25)')
-    _fig.update_xaxes(range=[-0.2, 0.2])
-    _fig.update_yaxes(range=[0, 1e6])
+    _fig.update_xaxes(range=[-0.4, 0.4])
+    _fig.update_yaxes(range=_dict['yrange'])
     # _fig.add_annotation(text=_info[0], xref="paper", yref="paper", x=1, y=1.17, showarrow=False)
     # _fig.add_annotation(text=_info[1], xref="paper", yref="paper", x=1, y=1.12, showarrow=False)
     # _fig.add_annotation(text=_info[4], xref="paper", yref="paper", x=1, y=1.07, showarrow=False)
@@ -73,18 +101,32 @@ def plotly_form(*args):
     # return _fig
 
 
-
 if __name__ == '__main__':
-
+    n_left = 130
+    n_right = 170
     registration = get_matlab_data(path, 138)
     x, holo = get_holo_param(registration)
-    n = 150 + np.arcsin(x) * 180 / np.pi / 24 * 60
+    angle0 = get_panel_angles()
+    r, angle_p = calc_antenna(angle0, 1)
+    angle_p -= pi
+    # n = 150 + np.arcsin(x) * 180 / np.pi / 24 * 60
 
     A = fftpack.fft(holo)
     phy = np.arcsin(np.imag(A) / np.absolute(A))
-    plotly_form(x, np.absolute(A))
-    # plt.plot(np.absolute(A))
-    # plt.show()
-    plt.plot(x, phy)
-    plt.show()
+    dict_ampl = {'y_title': 'Amplitude, arb. units',
+                 'x_title': 'Panel Number',
+                 'title': 'Amplitude',
+                 'ticktext': [f"{a}" for a in range(170, 130, -1)],
+                 'tickvals': angle_p,
+                 'yrange': [0, 1e6]
+                 }
+    plotly_form(x, np.absolute(A), dict_ampl)
+    dict_phase = {'y_title': 'Phase, rad',
+                  'x_title': 'Panel Number',
+                  'title': 'Phase',
+                  'ticktext': [f"{a}" for a in range(170, 130, -1)],
+                  'tickvals': angle_p,
+                  'yrange': [-2, 2]
+                  }
+    plotly_form(x, phy, dict_phase)
     pass

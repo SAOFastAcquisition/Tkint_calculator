@@ -103,7 +103,7 @@ def calc_antenna(a, _angle0_d):
     _radius_out = np.sqrt(parabola_value ** 2 + centers_distance ** 2 -
                           2 * parabola_value * centers_distance * np.cos(parabola_arg))
 
-    return _radius_out, parabola_arg
+    return _radius_out, parabola_arg + _angle0_d / 180 * pi
 
 
 def ref_panel_speed(_n_ref, _n_center):
