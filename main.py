@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 
-p = 263.6
-centers_distance = 156.2  # расстояние между геометрическим центром телескопа и фокусом антенны
-angle_per_panel = 24 / 60 * np.pi / 180
-panel_speed = 1.44e-3
-n_center = 100
-n_left = 100
-n_right = 233
+p = 263.6                   # Параметр параболы антенной системы (АС)
+centers_distance = 156.2    # расстояние между геометрическим центром телескопа и фокусом антенны
+angle_per_panel = 24 / 60 * np.pi / 180     # Размер щита в радианах
+panel_speed = 1.44e-3       # Скорость опорного щита в направлении геометрического центра телескопа (ГЦТ)
+n_center = 100              # Центральный щит АС
+n_left = 100                # Левый край отображаемого сектора
+n_right = 233               # Правый край отображаемого сектора
 pi = np.pi
 
 
@@ -31,10 +31,10 @@ def convert_polar_to_polar(_radius, _angle):
     return _radius_out, _angle_out
 
 
-def panel_angles():
-    _n_sector = n_right - n_left + 1
-    _sector_left_pos = (150 - n_left + 1 / 2) * angle_per_panel + pi
-    _sector_right_pos = (n_right - 150 + 1 / 2) * angle_per_panel + pi
+def panel_angles(_n_left, _n_right):
+    _n_sector = _n_right - _n_left + 1
+    _sector_left_pos = (150 - _n_left + 1 / 2) * angle_per_panel + pi
+    _sector_right_pos = (_n_right - 150 + 1 / 2) * angle_per_panel + pi
     _panel_angle_pos = np.linspace((_sector_left_pos - angle_per_panel / 2),
                                    -(_sector_right_pos - angle_per_panel / 2),
                                    _n_sector) + np.pi
@@ -56,7 +56,8 @@ def plotly_polar(_theta, _radial, _plotly_dict):
         theta=_theta,
         start_angle=0,
         direction="counterclockwise",
-        range_theta=_plotly_dict['range_theta']
+        range_theta=_plotly_dict['range_theta'],
+        range_r=[0, 300]
     )
 
     _fig.update_layout(
@@ -126,7 +127,7 @@ if __name__ == '__main__':
     angle0_d = -20  # Азимут в градусах
     n_center_az = int(150 + angle0_d / 24 * 60)
     ref_speed = ref_panel_speed(118, 150)
-    ang = panel_angles()
+    ang = panel_angles(n_left, n_right)
     radius_out, arg = calc_antenna(ang, angle0_d)
     angle0 = angle0_d / 180 * pi
     plotly_dict = {'range_theta': [140 - angle0_d, 220 - angle0_d],
@@ -138,5 +139,5 @@ if __name__ == '__main__':
                        }
                    }
                    }
-    fig = plotly_polar(panel_angles() - angle0, radius_out, plotly_dict)
+    fig = plotly_polar(ang - angle0, radius_out, plotly_dict)
     pass

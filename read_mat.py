@@ -10,6 +10,8 @@ from main import calc_antenna, ref_panel_speed
 path = r'/home/anatoly/Yandex.Disk/Amp_ML/Hologramm/WorkHolDiff/HolDatN.mat'
 pi = np.pi
 angle_per_panel = 24 / 60 * np.pi / 180
+n_left = 130
+n_right = 170
 
 
 def get_panel_angles():
@@ -34,30 +36,32 @@ def get_matlab_data(_path, _loc):
     return _data_row
 
 
-def get_holo_param(_data):
+def get_holo_scale(_data):
     """
 
     :param _data:
-    :return: _x - значение угла направления на точку отсчета ДПФ относительно фокуса параболы
+    :return: _x - значение sin угла направления на точку отсчета ДПФ относительно фокуса параболы
+            _holo - голограмма
     """
     _holo = registration['Holo1']
     _len_holo = len(_holo)
-    _v_car = registration['V_car']  # скорость каретки
-    _v_sh = registration['V_sh']  # скорость щита в направлении на ГЦА
+    _v_car = registration['V_car']                      # скорость каретки
+    _v_sh = registration['V_sh']                        # скорость щита в направлении на ГЦА
     _lambda = registration['Lambda']  # длина волны
     # _lambda = 3.95e-2
 
-    _holo_width = _len_holo * _v_car / 64  # длина голограммы
-    _n_ref = registration['Nref']  # опорный щит
-    _v_sh_p = - ref_panel_speed(_n_ref, 150)
-    _phy_ref = (150 - _n_ref) * 24 / 60 * np.pi / 180  # Угол на опорный щит из ГЦА
+    _holo_width = _len_holo * _v_car / 64               # длина голограммы
+    _n_ref = registration['Nref']                       # опорный щит
+    _v_sh_f = - ref_panel_speed(_n_ref, 150)            # скорость щита в направлении на фокус АС
+    _phy_ref = (150 - _n_ref) * 24 / 60 * np.pi / 180   # Угол на опорный щит из ГЦА
     _r, _psy_ref = calc_antenna(_phy_ref + pi, 0)
-    _psy_ref -= pi
-    _x = np.array([i for i in range(_len_holo)])  # номера отсчетов
-    _с0 = (1 + np.cos(_phy_ref)) * _v_sh_p / _v_car  # сдвиг восстановленного поля из-за движения опорного щита
-    _x = _x * _lambda / _holo_width + _с0 - np.sin(_psy_ref)
+    _psy_ref -= pi                                      # _psy_ref - угол на опорный щит из фокуса относительно оси АС
+    _x = np.array([i for i in range(_len_holo)])        # номера отсчетов
+    _с0 = (1 + np.cos(_phy_ref)) * _v_sh_f / _v_car     # сдвиг восстановленного поля из-за движения опорного щита
+    _x = _x * _lambda / _holo_width + _с0 - np.sin(_psy_ref)    # Масштабирование отсчетов голограммы к синусу угла
+    # из фокуса АС относительно оси АС и учет сдвига из-за положения и движения опорного щита
 
-    return _x, _holo
+    return _x
 
 
 def plotly_form(*args):
@@ -82,7 +86,7 @@ def plotly_form(*args):
                        # hovermode="x",
                        paper_bgcolor='rgba(165,225,225,0.5)',
                        plot_bgcolor='rgba(90,150,60,0.25)')
-    _fig.update_xaxes(range=[-0.4, 0.4])
+    _fig.update_xaxes(range=_dict['xrange'])
     _fig.update_yaxes(range=_dict['yrange'])
     # _fig.add_annotation(text=_info[0], xref="paper", yref="paper", x=1, y=1.17, showarrow=False)
     # _fig.add_annotation(text=_info[1], xref="paper", yref="paper", x=1, y=1.12, showarrow=False)
@@ -102,10 +106,10 @@ def plotly_form(*args):
 
 
 if __name__ == '__main__':
-    n_left = 130
-    n_right = 170
+
     registration = get_matlab_data(path, 138)
-    x, holo = get_holo_param(registration)
+    holo = registration['Holo1']
+    x = get_holo_scale(registration)
     angle0 = get_panel_angles()
     r, angle_p = calc_antenna(angle0, 1)
     angle_p -= pi
@@ -116,17 +120,19 @@ if __name__ == '__main__':
     dict_ampl = {'y_title': 'Amplitude, arb. units',
                  'x_title': 'Panel Number',
                  'title': 'Amplitude',
-                 'ticktext': [f"{a}" for a in range(170, 130, -1)],
-                 'tickvals': angle_p,
+                 'ticktext': [f"{a}" for a in range(170, 128, -2)],
+                 'tickvals': angle_p[::2],
+                 'xrange': [-0.4, 0.4],
                  'yrange': [0, 1e6]
                  }
     plotly_form(x, np.absolute(A), dict_ampl)
     dict_phase = {'y_title': 'Phase, rad',
                   'x_title': 'Panel Number',
                   'title': 'Phase',
-                  'ticktext': [f"{a}" for a in range(170, 130, -1)],
-                  'tickvals': angle_p,
+                  'ticktext': [f"{a}" for a in range(170, 128, -2)],
+                  'tickvals': angle_p[::2],
+                  'xrange': [-0.4, 0.4],
                   'yrange': [-2, 2]
                   }
-    plotly_form(x, phy, dict_phase)
+    plotly_form(np.arcsin(x), phy, dict_phase)
     pass
