@@ -5,9 +5,9 @@ from scipy import fftpack
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objs as go
-from main import calc_antenna, ref_panel_speed
+from holo_calc import calc_antenna, ref_panel_speed
 
-path = r'/home/anatoly/Yandex.Disk/Amp_ML/Hologramm/WorkHolDiff/HolDatN.mat'
+path = r'D:\YandexDisk\Amp_ML\Hologramm\WorkHolDiff\HolDatN.mat'
 pi = np.pi
 angle_per_panel = 24 / 60 * np.pi / 180
 n_left = 130

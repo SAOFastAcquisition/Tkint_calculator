@@ -2,6 +2,7 @@ import dash
 from dash import html
 import numpy as np
 import pandas as pd
+from pathlib import Path
 import scipy.optimize
 from scipy import fftpack
 import matplotlib.pyplot as plt
@@ -17,7 +18,42 @@ n_center = 100  # Центральный щит АС
 n_left_spect = 100  # Левый край отображаемого сектора
 n_right_spect = 233  # Правый край отображаемого сектора
 pi = np.pi
-path = r'/home/anatoly/Yandex.Disk/Amp_ML/Hologramm/WorkHolDiff/HolDatN.mat'
+
+
+def path_to_data():
+    """
+    Определяет путь на конкретной машине к корню каталога данных.
+    """
+    head_path1 = Path(r'D:\YandexDisk\Amp_ML\Hologramm\WorkHolDiff')  # Путь к каталогу данных для домашнего ноута
+    head_path1a = Path(
+        r'E:\YandexDisk\Amp_ML\Hologramm\WorkHolDiff\HolDatN.mat')  # Путь к каталогу данных для домашнего ноута
+    head_path1b = Path(
+        r'G:\YandexDisk\Amp_ML\Hologramm\WorkHolDiff\HolDatN.mat')  # Путь к каталогу данных для домашнего ноута
+    head_path2 = Path(
+        r'/media/anatoly/Samsung_T5/YandexDisk/Amp_ML/Hologramm/WorkHolDiff')  # Путь к каталогу данных для рабочего компа
+    head_path2a = Path(
+        r'/media/anatoly/T7/YandexDisk/Amp_ML/Hologramm/WorkHolDiff')  # Путь к каталогу данных для рабочего компа
+    head_path3 = Path(r'D:\YandexDisk\Amp_ML\Hologramm\WorkHolDiff\HolDatN.mat')  # Путь к каталогу данных для ноута ВМ
+    head_path4 = Path(
+        r'J:\YandexDisk\Amp_ML\Hologramm\WorkHolDiff\HolDatN.mat')  # Путь к каталогу данных для notebook 'Khristina'
+
+    if head_path1.is_dir():
+        head_path_out = head_path1
+    elif head_path1a.is_dir():
+        head_path_out = head_path1a
+    elif head_path1b.is_dir():
+        head_path_out = head_path1b
+    elif head_path2.is_dir():
+        head_path_out = head_path2
+    elif head_path2a.is_dir():
+        head_path_out = head_path2a
+    elif head_path3.is_dir():
+        head_path_out = head_path3
+    elif head_path4.is_dir():
+        head_path_out = head_path4
+    else:
+        return 'Err'
+    return Path(head_path_out, 'HolDatN.mat')
 
 
 def convert_polar_to_polar(_radius, _angle):
@@ -89,14 +125,18 @@ def get_holo_scale(_data):
 
     _holo_width = _len_holo * _v_car / 64  # длина голограммы
     _n_ref = _data['Nref']  # опорный щит
-    _v_sh_f = - ref_panel_speed(_n_ref, 150)  # скорость щита в направлении на фокус АС
+    _v_sh_f = ref_panel_speed(_n_ref, 150)  # скорость щита в направлении на фокус АС
     _phy_ref = (150 - _n_ref) * 24 / 60 * np.pi / 180  # Угол на опорный щит из ГЦА
     _r, _psy_ref = calc_antenna(_phy_ref + pi, 0)
     _psy_ref -= pi  # _psy_ref - угол на опорный щит из фокуса относительно оси АС
     _x = np.array([i for i in range(_len_holo)])  # номера отсчетов
     _с0 = (1 + np.cos(_phy_ref)) * _v_sh_f / _v_car  # сдвиг восстановленного поля из-за движения опорного щита
-    _x = _x * _lambda / _holo_width + _с0 - np.sin(_psy_ref)  # Масштабирование отсчетов голограммы к синусу угла
-    # из фокуса АС относительно оси АС и учет сдвига из-за положения и движения опорного щита
+    if _n_ref > 150:
+        # Масштабирование отсчетов голограммы к синусу угла
+        # из фокуса АС относительно оси АС и учет сдвига из-за положения и движения опорного щита
+        _x = _x * _lambda / _holo_width - _с0 + np.sin(_psy_ref)
+    else:
+        _x = _x * _lambda / _holo_width - _с0 - np.sin(_psy_ref)
 
     return _x
 
@@ -111,10 +151,10 @@ def get_field(_path, record_num):
     angle01 = get_panel_angles(n_left, n_right)
     r, angle_p = calc_antenna(angle01, 5)
 
-    print(f'angle_p = {angle_p}')
+    # print(f'angle_p = {angle_p}')
     angle_p -= pi
     angle_p = np.arcsin(angle_p)
-    print(f'angle_p1 = {angle_p}')
+    # print(f'angle_p1 = {angle_p}')
     # n = 150 + np.arcsin(x) * 180 / np.pi / 24 * 60
 
     A = fftpack.fft(holo)
@@ -125,7 +165,7 @@ def get_field(_path, record_num):
                  'ticktext': [f"{a}" for a in range(n_right, n_left - 2, -2)],
                  'tickvals': angle_p[::2],
                  'xrange': [-0.4, 0.4],
-                 'yrange': [0, 1e6]
+                 'yrange': [0, 3e6]
                  }
 
     dict_phase = {'y_title': 'Phase, rad',
@@ -279,19 +319,16 @@ def ref_panel_speed(_n_ref, _n_center):
 #           *** APPLICATION ***
 app = dash.Dash(name='Hologram Application')
 
-angle0 = 1
+angle0 = 0
 theta, r, plotly_dict = get_antenna(n_left_spect, n_right_spect, angle0)
+path = path_to_data()
+x, A, phy, dict_ampl, dict_phase = get_field(path, 127)
 
-
-
-
-x, A, phy, dict_ampl, dict_phase = get_field(path, 138)
-
-fig = plotly_polar(theta, r, plotly_dict)
-plotly_form(x, np.absolute(A), dict_ampl)
+# fig = plotly_polar(theta, r, plotly_dict)
+plotly_form(np.arcsin(x), np.absolute(A), dict_ampl)
 plotly_form(np.arcsin(x), phy, dict_phase)
 
-app.layout = html.Div([html.H2('Holography')])
+# app.layout = html.Div([html.H2('Holography')])
 
 if __name__ == '__main__':
     app.run_server(debug=True)
