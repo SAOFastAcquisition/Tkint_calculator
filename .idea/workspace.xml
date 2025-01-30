@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6dffc32c-5cdb-498c-9181-c97a754f119d" name="Changes" comment="создано отображение для фазы и амплитуды с пересчетом к номеру щита">
-      <change afterPath="$PROJECT_DIR$/cic_filter.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/read_txt_holo.py" afterDir="false" />
+    <list default="true" id="6dffc32c-5cdb-498c-9181-c97a754f119d" name="Changes" comment="Создан скрипт получения голограммы из комплексных данных прямого измерения поля в фокальном пятне облучателя 3, полученных с анализатора цепей Ceyear">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/holo_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/holo_app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/holo_calc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/read_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/read_mat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/holo_calc.py" beforeDir="false" afterPath="$PROJECT_DIR$/holo_calc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/read_txt_holo.py" beforeDir="false" afterPath="$PROJECT_DIR$/read_txt_holo.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,18 +34,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.cic_filter.executor&quot;: &quot;Run&quot;,
-    &quot;Python.holo_app.executor&quot;: &quot;Run&quot;,
-    &quot;Python.holo_calc (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.read_csv.executor&quot;: &quot;Run&quot;,
-    &quot;Python.read_txt_holo (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.read_txt_holo.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/Python_Projects/Fast_Acquisition_Bin_Base&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.cic_filter.executor": "Run",
+    "Python.holo_app.executor": "Run",
+    "Python.holo_calc (1).executor": "Debug",
+    "Python.read_csv.executor": "Run",
+    "Python.read_txt_holo (1).executor": "Run",
+    "Python.read_txt_holo.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "E:/Python_Projects/Holography"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\Python_Projects\Holography" />
@@ -192,19 +191,19 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.holo_calc" />
       <item itemvalue="Python.cic_filter" />
       <item itemvalue="Python.holo_app" />
       <item itemvalue="Python.holo_calc (1)" />
-      <item itemvalue="Python.holo_calc" />
       <item itemvalue="Python.read_txt_holo (1)" />
       <item itemvalue="Python.read_txt_holo" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.read_txt_holo (1)" />
+        <item itemvalue="Python.holo_calc (1)" />
         <item itemvalue="Python.holo_app" />
         <item itemvalue="Python.cic_filter" />
-        <item itemvalue="Python.holo_calc (1)" />
         <item itemvalue="Python.read_txt_holo" />
       </list>
     </recent_temporary>
@@ -246,7 +245,15 @@
       <option name="project" value="LOCAL" />
       <updated>1720619264189</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Создан скрипт получения голограммы из комплексных данных прямого измерения поля в фокальном пятне облучателя 3, полученных с анализатора цепей Ceyear">
+      <option name="closed" value="true" />
+      <created>1735149957644</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1735149957644</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -264,14 +271,15 @@
     <MESSAGE value="Сделано нахождение координат щита и отображение в круговых координатах для произвольного количества щитов и произвольного азимута на Юг+Плоский" />
     <MESSAGE value="Начата рвбота с ДПФ для голограмм и сделана загрузка структуры данных с голограммами из Матлаб с преобразованием в dataframe" />
     <MESSAGE value="создано отображение для фазы и амплитуды с пересчетом к номеру щита" />
-    <option name="LAST_COMMIT_MESSAGE" value="создано отображение для фазы и амплитуды с пересчетом к номеру щита" />
+    <MESSAGE value="Создан скрипт получения голограммы из комплексных данных прямого измерения поля в фокальном пятне облучателя 3, полученных с анализатора цепей Ceyear" />
+    <option name="LAST_COMMIT_MESSAGE" value="Создан скрипт получения голограммы из комплексных данных прямого измерения поля в фокальном пятне облучателя 3, полученных с анализатора цепей Ceyear" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/holo_calc.py</url>
-          <line>141</line>
+          <line>142</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -312,18 +320,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/read_txt_holo.py</url>
-          <line>20</line>
-          <option name="timeStamp" value="29" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/read_txt_holo.py</url>
-          <line>73</line>
+          <line>187</line>
           <option name="timeStamp" value="31" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/holo_calc.py</url>
+          <line>100</line>
+          <option name="timeStamp" value="41" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/read_txt_holo.py</url>
-          <line>51</line>
-          <option name="timeStamp" value="32" />
+          <line>183</line>
+          <option name="timeStamp" value="43" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/read_txt_holo.py</url>
+          <line>181</line>
+          <option name="timeStamp" value="44" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
